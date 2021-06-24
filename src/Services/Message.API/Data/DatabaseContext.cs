@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
-using Chat.Web.Models;
 using Message.API.Data.Configurations;
 using Message.API.Entities;
 
@@ -12,13 +10,16 @@ namespace Message.API.Data
         {
         }
 
+        public DbSet<Entities.Message> Messages { get; set; }
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<User> User { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
-
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
         }
     }
 }

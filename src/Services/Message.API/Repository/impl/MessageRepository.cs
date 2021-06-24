@@ -8,9 +8,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Message.API.Models;
 
-namespace Message.API.Repository
+namespace Message.API.Repository.impl
 {
-    public class MessageRepository:IMessageRepository
+    public class MessageRepository : IMessageRepository
     {
         private readonly DatabaseContext _context;
         private readonly DbSet<Message> _db;
@@ -27,7 +27,12 @@ namespace Message.API.Repository
         {
             IQueryable<Message> query = _db;
 
-            query = query.Where(m => m.ToRoomId == roomId);
+            query = query.Where(m => m.ToRoomId == roomId)
+                .Include(m => m.FromUserId)
+                .Include(m => m.ToRoom)
+                .OrderByDescending(m => m.CreatedAt)
+                .Take(20)
+                .Reverse();
             var messages = await query.AsNoTracking().ToListAsync();
 
             return _mapper.Map<IList<MessageDto>>(messages);
@@ -54,7 +59,7 @@ namespace Message.API.Repository
             _db.Remove(entity);
         }
 
-        public async void Update(MessageDto messageDto)
+        public async Task Update(MessageDto messageDto)
         {
             var result = _mapper.Map<Message>(messageDto);
             _db.Attach(result);

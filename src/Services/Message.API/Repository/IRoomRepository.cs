@@ -6,13 +6,14 @@ using Message.API.Models;
 
 namespace Message.API.Repository
 {
-    interface IRoomRepository
+    public interface IRoomRepository
     {
         public Task<IList<RoomDto>> GetAllByUserId(int userId);
-        public Task<RoomDto> Get(int id);
+        public  Task<RoomDto> GetByRoomName(int userId, string name);
 
+        public Task<RoomDto> Get(int id);
         public Task<RoomDto> SaveRoom(RoomDto room);
         public Task Delete(int id);
-        public void Update(RoomDto roomDto);
+        public Task Update(RoomDto roomDto);
     }
 }

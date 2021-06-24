@@ -14,6 +14,7 @@ namespace Message.API.Repository
         public Task<MessageDto> SaveMessage(MessageDto message);
 
         public Task Delete(int id);
-        public void Update(MessageDto messageDto);
+        public Task Update(MessageDto messageDto);
+
     }
 }

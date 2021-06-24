@@ -10,6 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Authentication.API.Helpers;
+using Message.API.Entities;
+using Message.API.Helpers;
+using Message.API.Repository;
+using Message.API.Repository.impl;
 
 namespace Message.API
 {
@@ -25,11 +30,25 @@ namespace Message.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Message.API", Version = "v1" });
             });
+
+            services.AddCors(o => {
+                o.AddPolicy("AllowAll", builder =>
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
+            services.AddAutoMapper(typeof(MapperProfile));
+
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

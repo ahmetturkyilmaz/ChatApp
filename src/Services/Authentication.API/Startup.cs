@@ -28,7 +28,6 @@ namespace Authentication.API
             services.AddControllers();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddSingleton(Configuration.GetSection("AppSettings").Get<AppSettings>());
-            services.AddScoped<IUserContext, UserContext>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddDbContext<DatabaseContext>(options =>

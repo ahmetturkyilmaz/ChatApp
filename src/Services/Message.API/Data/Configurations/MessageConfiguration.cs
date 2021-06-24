@@ -5,9 +5,9 @@ using Message.API.Entities;
 
 namespace Message.API.Data.Configurations
 {
-    public class MessageConfiguration : IEntityTypeConfiguration<Message>
+    public class MessageConfiguration : IEntityTypeConfiguration<Entities.Message>
     {
-        public void Configure(EntityTypeBuilder<Message> builder)
+        public void Configure(EntityTypeBuilder<Entities.Message> builder)
         {
             builder.ToTable("Messages");
 

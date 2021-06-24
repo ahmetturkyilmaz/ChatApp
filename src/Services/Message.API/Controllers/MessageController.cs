@@ -1,89 +1,46 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using AutoMapper;
+using Message.API.Helpers;
+using Message.API.Models;
 using Message.API.Services;
 
 namespace Message.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/message")]
     [ApiController]
     public class MessageController : ControllerBase
     {
-        private readonly MessageService _service;
+        private readonly IMessageService _service;
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Room>> Get(int id)
+        public MessageController(IMessageService service)
         {
-            
+            _service = service;
         }
 
-        [HttpGet("Room/{roomName}")]
-        public IActionResult GetMessages(string roomName)
+        [Authorize]
+        [HttpGet("room/{roomId}")]
+        public async Task<ActionResult<MessageDto>> GetAlByRoomId(int roomId)
         {
-            var room = _context.Rooms.FirstOrDefault(r => r.Name == roomName);
-            if (room == null)
-                return BadRequest();
-
-            var messages = _context.Messages.Where(m => m.ToRoomId == room.Id)
-                .Include(m => m.FromUser)
-                .Include(m => m.ToRoom)
-                .OrderByDescending(m => m.Timestamp)
-                .Take(20)
-                .AsEnumerable()
-                .Reverse()
-                .ToList();
-
-            var messagesViewModel = _mapper.Map<IEnumerable<Message>, IEnumerable<MessageViewModel>>(messages);
-
-            return Ok(messagesViewModel);
+            var result = await _service.GetAllMessagesByRoomId(roomId);
+            return Ok(result);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Message>> Create(MessageViewModel messageViewModel)
+        [ProducesResponseType(typeof(MessageDto), (int) HttpStatusCode.OK)]
+        public async Task<ActionResult<Entities.Message>> Create(MessageDto message)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            var room = _context.Rooms.FirstOrDefault(r => r.Name == messageViewModel.Room);
-            if (room == null)
-                return BadRequest();
+            var result = _service.SaveMessage(message);
 
-            var msg = new Message()
-            {
-                Content = Regex.Replace(messageViewModel.Content, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
-                FromUser = user,
-                ToRoom = room,
-                Timestamp = DateTime.Now
-            };
-
-            _context.Messages.Add(msg);
-            await _context.SaveChangesAsync();
-
-            // Broadcast the message
-            var createdMessage = _mapper.Map<Message, MessageViewModel>(msg);
-            await _hubContext.Clients.Group(room.Name).SendAsync("newMessage", createdMessage);
-
-            return CreatedAtAction(nameof(Get), new {id = msg.Id}, createdMessage);
+            return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var message = await _context.Messages
-                .Include(u => u.FromUser)
-                .Where(m => m.Id == id && m.FromUser.UserName == User.Identity.Name)
-                .FirstOrDefaultAsync();
-
-            if (message == null)
-                return NotFound();
-
-            _context.Messages.Remove(message);
-            await _context.SaveChangesAsync();
-
+            await _service.DeleteMessage(id);
             return NoContent();
         }
     }

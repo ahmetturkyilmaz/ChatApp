@@ -13,7 +13,6 @@ namespace Message.API.Entities
         {
             CreateMap<Message, MessageDto>().ReverseMap();
             CreateMap<Room, RoomDto>().ReverseMap();
-            CreateMap<RoomUserDto, RoomUserDto>().ReverseMap();
         }
     }
 }

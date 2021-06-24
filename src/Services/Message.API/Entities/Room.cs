@@ -9,8 +9,8 @@ namespace Message.API.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<RoomUser> Users { get; set; }
-
+        public DateTime CreatedAt { get; set; }
+        public ICollection<int> UsersIds { get; set; }
         public ICollection<Message> Messages { get; set; }
     }
 }
