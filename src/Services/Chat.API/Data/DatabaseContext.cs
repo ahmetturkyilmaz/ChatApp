@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Message.API.Data.Configurations;
-using Message.API.Entities;
+﻿using Chat.API.Data.Configurations;
+using Chat.API.Entities;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace Chat.API.Data
 {

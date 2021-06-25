@@ -4,20 +4,20 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Chat.API.Models
+namespace Chat.API.Models.response
 {
-    public class MessageDto
+    public class RoomResponse
     {
         public int Id { get; set; }
         [Required]
-        public string Content { get; set; }
+        public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int FromUserId { get; set; }
-        public int ToRoomId { get; set; }
-        public RoomDto ToRoom { get; set; }
 
-        public MessageDto()
+        public RoomResponse(int id, string name, DateTime createdAt)
         {
+            Id = id;
+            Name = name;
+            CreatedAt = createdAt;
         }
     }
 }

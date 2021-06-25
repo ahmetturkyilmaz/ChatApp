@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -9,23 +10,27 @@ using System.Threading.Tasks;
 using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Helpers;
+using Chat.API.Models;
 using Chat.API.Models.request;
 using Chat.API.Models.response;
-using Chat.API.Repositories;
+using Chat.API.Repository;
 using BC = BCrypt.Net.BCrypt;
 using Chat.API.Util;
+using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace Chat.API.Services.impl
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly AppSettings _appSettings;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(IOptions<AppSettings> appSettings, IUserRepository userRepository)
+        public UserService(IUnitOfWork unitOfWork, IOptions<AppSettings> appSettings)
         {
-            this._userRepository = userRepository;
-            this._appSettings = appSettings.Value;
+            _unitOfWork = unitOfWork;
+            _appSettings = appSettings.Value;
+            _userRepository = unitOfWork.UserRepository;
         }
 
         public async Task<JwtResponse> Authenticate(LoginRequest loginRequest)
@@ -43,9 +48,9 @@ namespace Chat.API.Services.impl
         }
 
 
-        public async Task<User> Create(SignupRequest signupRequest)
+        public async Task<UserDto> Create(SignupRequest signupRequest)
         {
-            var user = new User(signupRequest.Email.Trim(),
+            var user = new UserDto(signupRequest.Email.Trim(),
                 signupRequest.FirstName.Trim(),
                 signupRequest.LastName.Trim(),
                 signupRequest.Password.Trim());
@@ -55,26 +60,41 @@ namespace Chat.API.Services.impl
             return await _userRepository.CreateUser(user);
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<UserDto>> GetAll()
         {
             return await _userRepository.GetUsers();
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<UserResponse> GetById(int id)
 
         {
             var user = await _userRepository.GetUserById(id);
 
-            if (user == null)
-            {
-                throw new UserNotFoundException();
-            }
-            return user;
+            return new UserResponse(user.Id, user.Email, user.Name, user.Surname);
         }
 
-        public async Task<bool> Update(UserUpdateRequest updateRequest, int storedUserId)
+        public async Task<List<RoomResponse>> GetUserRooms(int id)
         {
-            var storedUser = await GetById(storedUserId);
+            var user = await _userRepository.GetUserById(id);
+            var rooms = user.Rooms;
+            if (rooms == null)
+            {
+                throw new RoomNotFoundException();
+            }
+
+            List<RoomResponse> roomResponses = new List<RoomResponse>();
+
+            foreach (var room in rooms)
+            {
+                roomResponses.Add(new RoomResponse(room.Id, room.Name, room.CreatedAt));
+            }
+
+            return roomResponses;
+        }
+
+        public async Task<UserDto> Update(UserUpdateRequest updateRequest, int storedUserId)
+        {
+            var storedUser = await _userRepository.GetUserById(storedUserId);
             if (storedUser.Email != updateRequest.Email)
             {
                 var user = await _userRepository.GetUserByEmail(updateRequest.Email);
@@ -93,10 +113,14 @@ namespace Chat.API.Services.impl
 
             storedUser.PasswordHash = BC.HashPassword(updateRequest.newPassword);
             UserValidator.ValidateUser(storedUser);
-            return await _userRepository.UpdateUser(storedUser);
+            var result = await _userRepository.UpdateUser(storedUser);
+
+            await _unitOfWork.Save();
+
+            return result;
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(UserDto user)
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -115,6 +139,7 @@ namespace Chat.API.Services.impl
         public void Delete(int id)
         {
             _userRepository.DeleteUser(id);
+            _unitOfWork.Save();
         }
     }
 }

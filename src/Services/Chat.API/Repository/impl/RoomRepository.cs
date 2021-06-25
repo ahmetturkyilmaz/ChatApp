@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Chat.API.Data;
 using Chat.API.Entities;
+using Chat.API.Exceptions;
 using Chat.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,17 +24,10 @@ namespace Chat.API.Repository.impl
             _mapper = mapper;
         }
 
-        public async Task<IList<RoomDto>> GetAllByUserId(int userId)
-        {
-            IQueryable<Room> query = _db;
-            var rooms = await query.Where(r => r.UsersIds.Contains(userId)).AsNoTracking().ToListAsync();
-            return _mapper.Map<IList<RoomDto>>(rooms);
-        }
-
         public async Task<RoomDto> GetByRoomName(int userId, string name)
         {
             IQueryable<Room> query = _db;
-            var rooms = await query.Where(r => r.UsersIds.Contains(userId))
+            var rooms = await query
                 .Where(r => r.Name.Equals(name))
                 .FirstOrDefaultAsync();
             return _mapper.Map<RoomDto>(rooms);
@@ -43,6 +37,11 @@ namespace Chat.API.Repository.impl
         {
             IQueryable<Room> query = _db;
             var result = await query.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+            if (result == null)
+            {
+                throw new RoomNotFoundException();
+            }
+
             return _mapper.Map<RoomDto>(result);
         }
 

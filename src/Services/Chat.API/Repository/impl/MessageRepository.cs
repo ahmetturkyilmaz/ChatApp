@@ -46,6 +46,17 @@ namespace Chat.API.Repository.impl
             return _mapper.Map<MessageDto>(result);
         }
 
+        public async Task<List<MessageDto>> GetByPagination(int roomId, int now, int next)
+        {
+            IQueryable<Message> query = _db;
+            var result = await query.Where(m => m.ToRoomId == roomId)
+                .OrderByDescending(m => m.CreatedAt)
+                .Skip(now)
+                .Take(next)
+                .ToListAsync();
+            return _mapper.Map<List<MessageDto>>(result);
+        }
+
         public async Task<MessageDto> SaveMessage(MessageDto message)
         {
             message.CreatedAt = new DateTime();

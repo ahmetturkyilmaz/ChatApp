@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat.API.Entities;
+using Chat.API.Models;
 
-namespace Chat.API.Repositories
+namespace Chat.API.Repository
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetUsers();
+        Task<IEnumerable<UserDto>> GetUsers();
 
-        Task<User> GetUserById(int id);
+        Task<UserDto> GetUserById(int id);
 
-        Task<User> GetUserByEmail(string email);
-        Task<User> CreateUser(User user);
-        Task<bool> UpdateUser(User user);
+        Task<UserDto> GetUserByEmail(string email);
+        Task<UserDto> CreateUser(UserDto user);
+        Task<UserDto> UpdateUser(UserDto user);
 
-        Task<bool> DeleteUser(int id);
+        Task DeleteUser(int id);
     }
 }

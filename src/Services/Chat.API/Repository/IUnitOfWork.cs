@@ -11,6 +11,7 @@ namespace Chat.API.Repository
 
         IRoomRepository RoomRepository { get; }
 
+        IUserRepository UserRepository { get; }
         Task Save();
     }
 }

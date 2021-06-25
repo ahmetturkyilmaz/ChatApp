@@ -1,13 +1,14 @@
 ﻿using System.Text.RegularExpressions;
 using Chat.API.Entities;
 using Chat.API.Exceptions;
+using Chat.API.Models;
 
 
 namespace Chat.API.Util
 {
     public class UserValidator
     {
-        public static void ValidateUser(User user)
+        public static void ValidateUser(UserDto user)
         {
             CheckIfPasswordProper(user.PasswordHash);
         }

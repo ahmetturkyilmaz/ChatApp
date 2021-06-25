@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Chat.API.Repository;
 
 namespace Chat.API.Helpers
 {
@@ -13,11 +14,13 @@ namespace Chat.API.Helpers
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public JWTHelper(RequestDelegate next, IOptions<AppSettings> appSettings)
+        public JWTHelper(RequestDelegate next, IOptions<AppSettings> appSettings, IUnitOfWork unitOfWork)
         {
             _next = next;
             _appSettings = appSettings.Value;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Invoke(HttpContext context)
@@ -46,8 +49,11 @@ namespace Chat.API.Helpers
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
-                var jwtToken = (JwtSecurityToken)validatedToken;
+                var jwtToken = (JwtSecurityToken) validatedToken;
                 var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
+
+                // Check if the user exists
+                _unitOfWork.UserRepository.GetUserById(int.Parse(userId));
 
                 // attach user to context on successful jwt validation
                 context.Items["user"] = userId;

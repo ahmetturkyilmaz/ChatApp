@@ -1,4 +1,4 @@
-﻿using Message.API.Entities;
+﻿using Chat.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,9 +10,7 @@ namespace Chat.API.Data.Configurations
         {
             builder.ToTable("Rooms");
 
-            builder.Property(s => s.Name).IsRequired().HasMaxLength(100);
-            
+            builder.HasKey(r => new {r.Id});
         }
-
     }
 }

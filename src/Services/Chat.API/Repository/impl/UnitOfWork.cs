@@ -12,6 +12,7 @@ namespace Chat.API.Repository.impl
         private readonly DatabaseContext _context;
         private IMessageRepository _messageRepository;
         private IRoomRepository _roomRepository;
+        private IUserRepository _userRepository;
         private IMapper _mapper;
 
         public UnitOfWork(DatabaseContext context, IMapper mapper)
@@ -20,9 +21,9 @@ namespace Chat.API.Repository.impl
             _mapper = mapper;
         }
 
-        public IMessageRepository messageRepository => _messageRepository ??= new MessageRepository(_context, _mapper);
-
-        public IRoomRepository roomRepository => _roomRepository ??= new RoomRepository(_context, _mapper);
+        public IMessageRepository MessageRepository => _messageRepository ??= new MessageRepository(_context, _mapper);
+        public IRoomRepository RoomRepository => _roomRepository ??= new RoomRepository(_context, _mapper);
+        public IUserRepository UserRepository => _userRepository ??= new UserRepository(_context, _mapper);
 
         public void Dispose()
         {

@@ -1,9 +1,11 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using Chat.API.Helpers;
+using Chat.API.Models;
+using Chat.API.Models.response;
+using Chat.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Message.API.Helpers;
-using Message.API.Models;
-using Message.API.Services;
+
 
 namespace Chat.API.Controllers
 {
@@ -19,17 +21,26 @@ namespace Chat.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("room/{roomId}")]
-        public async Task<ActionResult<MessageDto>> GetAlByRoomId(int roomId)
+        [Route("room/{roomId}", Name = "GetAllByRoomId")]
+        [HttpGet]
+        public async Task<ActionResult<MessageDto>> GetAllByRoomId(int roomId)
         {
             var result = await _service.GetAllMessagesByRoomId(roomId);
             return Ok(result);
         }
 
         [Authorize]
+        [Route("room/{roomId}/{now}/{next}", Name = "GetUserByJWTWithRooms")]
+        public async Task<ActionResult<MessageResponse>> GetByPagination(int roomId, int now, int next)
+        {
+            var result = await _service.GetByPagination(roomId, now, next);
+            return Ok(result);
+        }
+
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(MessageDto), (int) HttpStatusCode.OK)]
-        public async Task<ActionResult<Entities.Message>> Create(MessageDto message)
+        public async Task<ActionResult<MessageDto>> Create([FromBody] MessageDto message)
         {
             var result = _service.SaveMessage(message);
 

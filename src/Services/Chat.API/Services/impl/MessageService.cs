@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Chat.API.Models;
+using Chat.API.Models.response;
 using Chat.API.Repository;
 
 
@@ -25,6 +26,23 @@ namespace Chat.API.Services.impl
             await _unitOfWork.RoomRepository.Get(roomId);
 
             return await _messageRepository.GetAllByRoomId(roomId);
+        }
+
+        public async Task<List<MessageResponse>> GetByPagination(int roomId, int now, int next)
+        {
+            var messages = await _messageRepository.GetByPagination(roomId, now, next);
+            if (messages == null)
+            {
+                return null;
+            }
+
+            return messages
+                .Select(message =>
+                    new MessageResponse(message.Id,
+                        message.Content,
+                        message.CreatedAt,
+                        message.FromUserId,
+                        message.FromUserId)).ToList();
         }
 
         public async Task<MessageDto> GetById(int messageId)

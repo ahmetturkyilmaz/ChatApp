@@ -3,7 +3,6 @@ using System.Net;
 using Chat.API.Helpers;
 using Chat.API.Models;
 using Chat.API.Services;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.API.Controllers
@@ -20,7 +19,7 @@ namespace Chat.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("room/{roomId}")]
+        [HttpGet("{roomId}")]
         public async Task<ActionResult<RoomDto>> GetById(int roomId)
         {
             var result = await _service.GetById(roomId);
@@ -30,11 +29,11 @@ namespace Chat.API.Controllers
         [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(MessageDto), (int) HttpStatusCode.OK)]
-        public async Task<ActionResult<Entities.Message>> Create(RoomDto roomDto)
+        public async Task<ActionResult<MessageDto>> Create([FromBody] RoomDto roomDto)
         {
             var storedUserId = (int) HttpContext.Items["user"];
 
-            var result = _service.SaveRoom(storedUserId, roomDto);
+            var result = await _service.SaveRoom(storedUserId, roomDto);
 
             return Ok(result);
         }

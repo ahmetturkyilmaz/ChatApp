@@ -1,4 +1,4 @@
-﻿
+﻿using System.Collections.Generic;
 
 namespace Chat.API.Entities
 {
@@ -9,10 +9,12 @@ namespace Chat.API.Entities
         public string Name { get; set; }
         public string Surname { get; set; }
         public string PasswordHash { get; set; }
-        
+        public ICollection<Room> Rooms { get; set; }
+
         public User()
         {
         }
+
         public User(string email, string name, string surname, string passwordHash)
         {
             Email = email;
@@ -20,7 +22,5 @@ namespace Chat.API.Entities
             Surname = surname;
             PasswordHash = passwordHash;
         }
-
-        
     }
 }

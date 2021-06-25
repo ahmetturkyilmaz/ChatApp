@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Chat.API.Exceptions;
 using Chat.API.Models;
 using Chat.API.Repository;
@@ -19,10 +16,6 @@ namespace Chat.API.Services.impl
             _repository = unitOfWork.RoomRepository;
         }
 
-        public async Task<IList<RoomDto>> GetAllByUserId(int userId)
-        {
-            return await _repository.GetAllByUserId(userId);
-        }
 
         public async Task<RoomDto> GetById(int roomId)
         {
@@ -35,7 +28,7 @@ namespace Chat.API.Services.impl
             return result;
         }
 
-        public async Task SaveRoom(int userId, RoomDto room)
+        public async Task<RoomDto> SaveRoom(int userId, RoomDto room)
         {
             var storedRoom = _repository.GetByRoomName(userId, room.Name);
             if (storedRoom != null)
@@ -43,16 +36,22 @@ namespace Chat.API.Services.impl
                 throw new RoomNameAlreadyExistsException();
             }
 
-            await _repository.SaveRoom(room);
-            await _unitOfWork.Save();
+            var recordedRoom = await _repository.SaveRoom(room);
 
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+
+            user.Rooms.Add(recordedRoom);
+
+            await _unitOfWork.UserRepository.UpdateUser(user);
+
+            await _unitOfWork.Save();
+            return recordedRoom;
         }
 
         public async Task UpdateRoom(RoomDto room)
         {
             await _repository.Update(room);
             await _unitOfWork.Save();
-
         }
 
         public async Task DeleteRoom(int id)

@@ -1,19 +1,17 @@
+using Chat.API.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Chat.API.Entities;
 using Chat.API.Helpers;
 using Chat.API.Repository;
 using Chat.API.Repository.impl;
+using Chat.API.Services;
+using Chat.API.Services.impl;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Chat.API
@@ -31,14 +29,14 @@ namespace Chat.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
+            services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("sqlConnection"))
+            );
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chat.API", Version = "v1" });
-            });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Chat.API", Version = "v1"}); });
 
-            services.AddCors(o => {
+            services.AddCors(o =>
+            {
                 o.AddPolicy("AllowAll", builder =>
                     builder.AllowAnyOrigin()
                         .AllowAnyMethod()
@@ -46,15 +44,16 @@ namespace Chat.API
             });
 
             services.AddAutoMapper(typeof(MapperProfile));
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<IMessageService, MessageService>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -66,10 +65,7 @@ namespace Chat.API
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

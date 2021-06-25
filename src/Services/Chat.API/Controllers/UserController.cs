@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Message.API.Entities;
-using Message.API.Models.request;
-using Message.API.Services;
-using Message.API.Helpers;
+using Chat.API.Entities;
+using Chat.API.Helpers;
+using Chat.API.Models.request;
+using Chat.API.Services;
+
 
 namespace Chat.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/auth")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -48,15 +49,36 @@ namespace Chat.API.Controllers
         }
 
         [Authorize]
-        [Route("{id:length(24)}", Name = "GetUserById")]
+        [Route("{id}", Name = "GetUserById")]
         [ProducesResponseType(typeof(User), (int) HttpStatusCode.OK)]
         [HttpGet]
-        public async Task<ActionResult<User>> GetUserById(string id)
+        public async Task<ActionResult<User>> GetUserById(int id)
         {
             var user = await _userService.GetById(id);
             return Ok(user);
         }
 
+        [Authorize]
+        [Route("me", Name = "GetUserByJWT")]
+        [ProducesResponseType(typeof(User), (int) HttpStatusCode.OK)]
+        [HttpGet]
+        public async Task<ActionResult<User>> GetUserByJWT(int id)
+        {
+            var storedUserId = (int) HttpContext.Items["user"];
+            var user = await _userService.GetById(id);
+            return Ok(user);
+        }
+
+        [Authorize]
+        [Route("me/rooms", Name = "GetUserByJWTWithRooms")]
+        [ProducesResponseType(typeof(User), (int)HttpStatusCode.OK)]
+        [HttpGet]
+        public async Task<ActionResult<User>> GetUserRoomsByJWT(int id)
+        {
+            var storedUserId = (int)HttpContext.Items["user"];
+            var user = await _userService.GetById(id);
+            return Ok(user);
+        }
         [Authorize]
         [HttpPut]
         public async Task<ActionResult<bool>> UpdateUser([FromBody] UserUpdateRequest user)
