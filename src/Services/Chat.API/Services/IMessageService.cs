@@ -11,7 +11,7 @@ namespace Chat.API.Services
     {
         public Task<IList<MessageDto>> GetAllMessagesByRoomId(int roomId);
         public Task<MessageDto> GetById(int messageId);
-        public Task SaveMessage(MessageDto message);
+        public Task<MessageResponse> SaveMessage(MessageDto message);
 
         public Task<List<MessageResponse>> GetByPagination(int roomId, int now, int next);
         public Task UpdateMessage(MessageDto message);

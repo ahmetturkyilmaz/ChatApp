@@ -30,8 +30,8 @@ namespace Chat.API.Repository.impl
             IQueryable<Message> query = _db;
 
             query = query.Where(m => m.ToRoomId == roomId)
-                .Include(m => m.FromUserId)
-                .Include(m => m.ToRoom)
+                //.Include(m => m.FromUserId)
+                //.Include(m => m.ToRoom)
                 .OrderByDescending(m => m.CreatedAt)
                 .Take(20)
                 .Reverse();
@@ -60,7 +60,6 @@ namespace Chat.API.Repository.impl
 
         public async Task<MessageResponse> SaveMessage(MessageDto message)
         {
-            message.CreatedAt = new DateTime();
             var entity = new Message()
             {
                 Content = message.Content,

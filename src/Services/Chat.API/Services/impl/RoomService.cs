@@ -32,7 +32,7 @@ namespace Chat.API.Services.impl
 
         public async Task<RoomDto> SaveRoom(int userId, RoomDto room)
         {
-            var storedRoom = _repository.GetByRoomName(userId, room.Name);
+            var storedRoom = await _repository.GetByRoomName(userId, room.Name);
             if (storedRoom != null)
             {
                 throw new RoomNameAlreadyExistsException();
@@ -40,13 +40,8 @@ namespace Chat.API.Services.impl
 
             var recordedRoom = await _repository.SaveRoom(room);
 
-
-            foreach (var id in room.UserIds)
-            {
-                await _unitOfWork.RoomUserRepository.PostRoomUser(id, recordedRoom.Id);
-
-                await _unitOfWork.Save();
-            }
+            await _unitOfWork.RoomUserRepository.PostRoomUser(userId, recordedRoom.Id);
+            await _unitOfWork.Save();
 
             return null;
         }

@@ -30,6 +30,10 @@ namespace Chat.API.Repository.impl
             var rooms = await query
                 .Where(r => r.Name.Equals(name))
                 .FirstOrDefaultAsync();
+            if (rooms==null)
+            {
+                return null;
+            }
             return _mapper.Map<RoomDto>(rooms);
         }
 

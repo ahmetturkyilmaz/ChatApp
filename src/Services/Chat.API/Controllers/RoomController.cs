@@ -21,22 +21,22 @@ namespace Chat.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("{roomId}")]
-        public async Task<ActionResult<RoomDto>> GetById(int roomId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RoomDto>> GetById(int id)
         {
-            var result = await _roomService.GetById(roomId);
+            var result = await _roomService.GetById(id);
             return Ok(result);
         }
 
         [Authorize]
         [HttpPost]
-        [Route("{roomId}/join", Name = "CreateRoomUser")]
+        [Route("{id}/join", Name = "CreateRoomUser")]
         [ProducesResponseType(typeof(MessageDto), (int) HttpStatusCode.OK)]
-        public async Task<ActionResult<MessageDto>> CreateRoomUser(int roomId)
+        public async Task<ActionResult<MessageDto>> CreateRoomUser(int id)
         {
             var storedUserId = (string) HttpContext.Items["user"];
 
-            await _userRoomService.PostRoomUser(int.Parse(storedUserId), roomId);
+            await _userRoomService.PostRoomUser(int.Parse(storedUserId), id);
 
             return Ok();
         }

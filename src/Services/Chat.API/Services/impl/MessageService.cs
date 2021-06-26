@@ -16,8 +16,9 @@ namespace Chat.API.Services.impl
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMessageRepository _messageRepository;
 
-        public MessageService(IUnitOfWork unitOfWork, IRoomService roomService)
+        public MessageService(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             _messageRepository = unitOfWork.MessageRepository;
         }
 
@@ -50,14 +51,12 @@ namespace Chat.API.Services.impl
             return await _messageRepository.Get(messageId);
         }
 
-        public async Task SaveMessage(MessageDto message)
+        public async Task<MessageResponse> SaveMessage(MessageDto message)
         {
-
             message.Content = Regex.Replace(message.Content, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty);
 
             MessageResponse response = await _messageRepository.SaveMessage(message);
-
-            await _unitOfWork.Save();
+            return response;
             //Broadcast the message back
         }
 

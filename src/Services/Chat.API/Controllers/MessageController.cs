@@ -22,6 +22,7 @@ namespace Chat.API.Controllers
 
         [Authorize]
         [Route("room/{roomId}", Name = "GetAllByRoomId")]
+        [ProducesResponseType(typeof(MessageDto), (int)HttpStatusCode.OK)]
         [HttpGet]
         public async Task<ActionResult<MessageDto>> GetAllByRoomId(int roomId)
         {
@@ -31,6 +32,7 @@ namespace Chat.API.Controllers
 
         [Authorize]
         [Route("room/{roomId}/{now}/{next}", Name = "GetByPagination")]
+        [ProducesResponseType(typeof(MessageResponse), (int)HttpStatusCode.OK)]
         [HttpGet]
         public async Task<ActionResult<MessageResponse>> GetByPagination(int roomId, int now, int next)
         {
@@ -39,11 +41,13 @@ namespace Chat.API.Controllers
         }
 
         [Authorize]
+        [ProducesResponseType(typeof(MessageDto), (int)HttpStatusCode.OK)]
         [HttpPost]
-        [ProducesResponseType(typeof(MessageDto), (int) HttpStatusCode.OK)]
         public async Task<ActionResult<MessageDto>> Create([FromBody] MessageDto message)
         {
-            var result = _service.SaveMessage(message);
+            var storedUserId = (string)HttpContext.Items["user"];
+            message.FromUserId = int.Parse(storedUserId);
+            var result = await _service.SaveMessage(message);
 
             return Ok(result);
         }
