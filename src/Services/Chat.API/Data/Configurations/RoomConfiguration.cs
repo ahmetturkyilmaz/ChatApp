@@ -8,7 +8,6 @@ namespace Chat.API.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Room> builder)
         {
-            builder.ToTable("Rooms");
 
             builder.HasKey(r => new {r.Id});
         }

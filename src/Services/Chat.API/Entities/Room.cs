@@ -14,6 +14,6 @@ namespace Chat.API.Entities
         public DateTime CreatedAt { get; set; }
         public ICollection<Message> Messages { get; set; }
 
-        public ICollection<User> Users { get; set; }
+        public ICollection<RoomUser> RoomUsers { get; set; }
     }
 }

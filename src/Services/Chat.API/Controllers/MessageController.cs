@@ -30,7 +30,8 @@ namespace Chat.API.Controllers
         }
 
         [Authorize]
-        [Route("room/{roomId}/{now}/{next}", Name = "GetUserByJWTWithRooms")]
+        [Route("room/{roomId}/{now}/{next}", Name = "GetByPagination")]
+        [HttpGet]
         public async Task<ActionResult<MessageResponse>> GetByPagination(int roomId, int now, int next)
         {
             var result = await _service.GetByPagination(roomId, now, next);

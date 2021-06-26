@@ -4,16 +4,15 @@ namespace Chat.API.Models.request
 {
     public class SignupRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Email is required")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "FirstName is required")]
         public string FirstName { get; set; }
 
-        [Required]
         public string LastName { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Chat.API.Entities;
 
 namespace Chat.API.Models
 {

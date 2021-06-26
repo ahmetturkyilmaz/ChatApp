@@ -13,8 +13,10 @@ namespace Chat.API.Services
         Task<JwtResponse> Authenticate(LoginRequest loginRequest);
         Task<IEnumerable<UserDto>> GetAll();
         Task<UserResponse> GetById(int id);
+        Task<UserResponseWithRooms> GetUserWithRooms(int id);
+        Task<List<RoomResponse>> GetUserRooms(int id);
         Task<UserDto> Create(SignupRequest signupRequest);
-        Task<UserDto> Update( UserUpdateRequest user, int storedUserId);
+        Task<UserDto> Update(UserUpdateRequest user, int storedUserId);
         void Delete(int id);
     }
 }

@@ -45,17 +45,27 @@ namespace Chat.API.Repository.impl
             return _mapper.Map<RoomDto>(result);
         }
 
-        public async Task<RoomDto> SaveRoom(RoomDto room)
+        public async Task<Room> SaveRoom(RoomDto room)
         {
             room.CreatedAt = new DateTime();
-            var result = _mapper.Map<Room>(room);
-            await _db.AddAsync(result);
-            return _mapper.Map<RoomDto>(result);
+            var roomEntity = new Room()
+            {
+                Name = room.Name,
+                CreatedAt = new DateTime()
+            };
+            await _db.AddAsync(roomEntity);
+            await _context.SaveChangesAsync();
+            return roomEntity;
         }
 
         public async Task Delete(int id)
         {
             var entity = await _db.FindAsync(id);
+            if (entity == null)
+            {
+                throw new RoomNotFoundException();
+            }
+
             _db.Remove(entity);
         }
 
@@ -64,6 +74,7 @@ namespace Chat.API.Repository.impl
             var result = _mapper.Map<Room>(roomDto);
             _db.Attach(result);
             _context.Entry(result).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

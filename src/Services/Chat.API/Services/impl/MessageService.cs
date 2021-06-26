@@ -52,14 +52,10 @@ namespace Chat.API.Services.impl
 
         public async Task SaveMessage(MessageDto message)
         {
-            RoomDto room = await _unitOfWork.RoomRepository.Get(message.ToRoomId);
 
             message.Content = Regex.Replace(message.Content, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty);
 
-            MessageDto storedMessage = await _messageRepository.SaveMessage(message);
-            room.Messages.Add(storedMessage);
-
-            await _unitOfWork.RoomRepository.SaveRoom(room);
+            MessageResponse response = await _messageRepository.SaveMessage(message);
 
             await _unitOfWork.Save();
             //Broadcast the message back

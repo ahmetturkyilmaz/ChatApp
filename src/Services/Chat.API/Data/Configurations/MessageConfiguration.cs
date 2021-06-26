@@ -8,8 +8,6 @@ namespace Chat.API.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Entities.Message> builder)
         {
-            builder.ToTable("Messages");
-
             builder.Property(s => s.Content).IsRequired().HasMaxLength(500);
 
             builder.HasOne(s => s.ToRoom)

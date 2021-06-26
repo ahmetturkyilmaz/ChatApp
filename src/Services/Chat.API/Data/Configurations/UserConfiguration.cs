@@ -12,7 +12,6 @@ namespace Chat.API.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Users");
 
             builder.Property(s => s.Name)
                 .IsRequired()

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Chat.API.Data;
 using Chat.API.Entities;
 using Chat.API.Models;
+using Chat.API.Models.response;
 
 namespace Chat.API.Repository.impl
 {
@@ -57,12 +58,19 @@ namespace Chat.API.Repository.impl
             return _mapper.Map<List<MessageDto>>(result);
         }
 
-        public async Task<MessageDto> SaveMessage(MessageDto message)
+        public async Task<MessageResponse> SaveMessage(MessageDto message)
         {
             message.CreatedAt = new DateTime();
-            var result = _mapper.Map<Message>(message);
-            await _db.AddAsync(result);
-            return _mapper.Map<MessageDto>(result);
+            var entity = new Message()
+            {
+                Content = message.Content,
+                CreatedAt = new DateTime(),
+                ToRoomId = message.ToRoomId,
+                FromUserId = message.FromUserId
+            };
+            await _db.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return new MessageResponse(entity.Id, entity.Content, entity.CreatedAt, entity.FromUserId, entity.ToRoomId);
         }
 
         public async Task Delete(int id)

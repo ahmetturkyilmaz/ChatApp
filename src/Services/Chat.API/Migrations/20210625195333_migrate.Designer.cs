@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210625094432_migrate")]
+    [Migration("20210625195333_migrate")]
     partial class migrate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,7 +51,7 @@ namespace Chat.API.Migrations
 
             modelBuilder.Entity("Chat.API.Entities.Room", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -59,16 +59,28 @@ namespace Chat.API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Rooms");
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.RoomUser", b =>
+                {
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoomId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RoomUser");
                 });
 
             modelBuilder.Entity("Chat.API.Entities.User", b =>
@@ -94,22 +106,7 @@ namespace Chat.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("RoomUser", b =>
-                {
-                    b.Property<int>("RoomsUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RoomsUserId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("RoomUser");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Chat.API.Entities.Message", b =>
@@ -123,24 +120,35 @@ namespace Chat.API.Migrations
                     b.Navigation("ToRoom");
                 });
 
-            modelBuilder.Entity("RoomUser", b =>
+            modelBuilder.Entity("Chat.API.Entities.RoomUser", b =>
                 {
-                    b.HasOne("Chat.API.Entities.Room", null)
-                        .WithMany()
-                        .HasForeignKey("RoomsUserId")
+                    b.HasOne("Chat.API.Entities.Room", "Room")
+                        .WithMany("RoomUsers")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Chat.API.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
+                    b.HasOne("Chat.API.Entities.User", "User")
+                        .WithMany("RoomUsers")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Chat.API.Entities.Room", b =>
                 {
                     b.Navigation("Messages");
+
+                    b.Navigation("RoomUsers");
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.User", b =>
+                {
+                    b.Navigation("RoomUsers");
                 });
 #pragma warning restore 612, 618
         }

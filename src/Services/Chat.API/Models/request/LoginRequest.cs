@@ -4,8 +4,9 @@ namespace Chat.API.Models.request
 {
     public class LoginRequest
     {
-        [Required] public string Email { get; set; }
-
-        [Required] public string Password { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        public string Email { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; }
     }
 }

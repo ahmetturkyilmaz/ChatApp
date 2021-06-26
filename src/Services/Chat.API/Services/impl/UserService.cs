@@ -57,7 +57,9 @@ namespace Chat.API.Services.impl
 
             UserValidator.ValidateUser(user);
             user.PasswordHash = BC.HashPassword(user.PasswordHash);
-            return await _userRepository.CreateUser(user);
+            var result = await _userRepository.CreateUser(user);
+            await _unitOfWork.Save();
+            return result;
         }
 
         public async Task<IEnumerable<UserDto>> GetAll()
@@ -73,10 +75,18 @@ namespace Chat.API.Services.impl
             return new UserResponse(user.Id, user.Email, user.Name, user.Surname);
         }
 
+        public async Task<UserResponseWithRooms> GetUserWithRooms(int id)
+
+        {
+            var user = await _userRepository.GetUserWithRooms(id);
+
+            return user;
+        }
+
         public async Task<List<RoomResponse>> GetUserRooms(int id)
         {
-            var user = await _userRepository.GetUserById(id);
-            var rooms = user.Rooms;
+            var userWithRooms = await GetUserWithRooms(id);
+            var rooms = userWithRooms.Rooms;
             if (rooms == null)
             {
                 throw new RoomNotFoundException();

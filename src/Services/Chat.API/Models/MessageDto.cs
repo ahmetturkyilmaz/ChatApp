@@ -13,6 +13,7 @@ namespace Chat.API.Models
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
         public int FromUserId { get; set; }
+        [Required]
         public int ToRoomId { get; set; }
         public RoomDto ToRoom { get; set; }
 

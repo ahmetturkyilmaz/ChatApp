@@ -47,8 +47,8 @@ namespace Chat.API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IMessageService, MessageService>();
-
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IRoomUserService, RoomUserService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +60,8 @@ namespace Chat.API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chat.API v1"));
             }
+
+            app.UseMiddleware<JWTHelper>();
 
             app.UseRouting();
 

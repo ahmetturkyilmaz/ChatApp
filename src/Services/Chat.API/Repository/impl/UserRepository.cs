@@ -7,6 +7,7 @@ using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Helpers;
 using Chat.API.Models;
+using Chat.API.Models.response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -36,7 +37,7 @@ namespace Chat.API.Repository.impl
         public async Task<UserDto> GetUserById(int id)
         {
             IQueryable<User> query = _db;
-            query = query.Where(user => user.Id == id);
+            query = query.Where(user => user.Id == id).AsNoTracking();
             var result = await query.FirstOrDefaultAsync();
 
             if (result == null)
@@ -45,6 +46,31 @@ namespace Chat.API.Repository.impl
             }
 
             return _mapper.Map<UserDto>(result);
+        }
+
+        public async Task<UserResponseWithRooms> GetUserWithRooms(int id)
+        {
+            IQueryable<User> query = _db;
+            var userResponse = query
+                .Where(user => user.Id == id)
+                .AsNoTracking()
+                .Select(user => new UserResponseWithRooms()
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    Rooms = user.RoomUsers.Select(r => r.Room)
+                        .ToList()
+                });
+            var result = await userResponse.FirstOrDefaultAsync();
+
+            if (result == null)
+            {
+                throw new UserNotFoundException();
+            }
+
+            return result;
         }
 
         public async Task<UserDto> GetUserByEmail(string email)
@@ -73,7 +99,7 @@ namespace Chat.API.Repository.impl
         {
             var entity = _mapper.Map<User>(user);
             var updateResult = _db.Attach(entity);
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(updateResult.Entity).State = EntityState.Modified;
             return _mapper.Map<UserDto>(updateResult.Entity);
         }
 

@@ -11,19 +11,18 @@ namespace Chat.API.Migrations
                 name: "Rooms",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rooms", x => x.UserId);
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "User",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -35,7 +34,7 @@ namespace Chat.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_User", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,7 +55,7 @@ namespace Chat.API.Migrations
                         name: "FK_Messages_Rooms_ToRoomId",
                         column: x => x.ToRoomId,
                         principalTable: "Rooms",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -64,22 +63,22 @@ namespace Chat.API.Migrations
                 name: "RoomUser",
                 columns: table => new
                 {
-                    RoomsUserId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoomId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoomUser", x => new { x.RoomsUserId, x.UsersId });
+                    table.PrimaryKey("PK_RoomUser", x => new { x.RoomId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_RoomUser_Rooms_RoomsUserId",
-                        column: x => x.RoomsUserId,
+                        name: "FK_RoomUser_Rooms_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "Rooms",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RoomUser_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
+                        name: "FK_RoomUser_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -90,9 +89,9 @@ namespace Chat.API.Migrations
                 column: "ToRoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomUser_UsersId",
+                name: "IX_RoomUser_UserId",
                 table: "RoomUser",
-                column: "UsersId");
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -107,7 +106,7 @@ namespace Chat.API.Migrations
                 name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "User");
         }
     }
 }

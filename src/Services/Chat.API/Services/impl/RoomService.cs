@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Models;
 using Chat.API.Repository;
@@ -13,6 +14,7 @@ namespace Chat.API.Services.impl
 
         public RoomService(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             _repository = unitOfWork.RoomRepository;
         }
 
@@ -38,14 +40,15 @@ namespace Chat.API.Services.impl
 
             var recordedRoom = await _repository.SaveRoom(room);
 
-            var user = await _unitOfWork.UserRepository.GetUserById(userId);
 
-            user.Rooms.Add(recordedRoom);
+            foreach (var id in room.UserIds)
+            {
+                await _unitOfWork.RoomUserRepository.PostRoomUser(id, recordedRoom.Id);
 
-            await _unitOfWork.UserRepository.UpdateUser(user);
+                await _unitOfWork.Save();
+            }
 
-            await _unitOfWork.Save();
-            return recordedRoom;
+            return null;
         }
 
         public async Task UpdateRoom(RoomDto room)

@@ -14,26 +14,28 @@ namespace Chat.API.Helpers
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
-        private readonly IUnitOfWork _unitOfWork;
+        private IUnitOfWork _unitOfWork;
 
-        public JWTHelper(RequestDelegate next, IOptions<AppSettings> appSettings, IUnitOfWork unitOfWork)
+        public JWTHelper(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
             _next = next;
             _appSettings = appSettings.Value;
-            _unitOfWork = unitOfWork;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                AttachUserToContext(context, token);
+            {
+                await AttachUserToContext(context, token);
+            }
 
             await _next(context);
         }
 
-        private void AttachUserToContext(HttpContext context, string token)
+        private async Task AttachUserToContext(HttpContext context, string token)
         {
             try
             {
@@ -52,9 +54,8 @@ namespace Chat.API.Helpers
                 var jwtToken = (JwtSecurityToken) validatedToken;
                 var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
-                // Check if the user exists
-                _unitOfWork.UserRepository.GetUserById(int.Parse(userId));
-
+                //Check if the user exists
+                await _unitOfWork.UserRepository.GetUserById(int.Parse(userId));
                 // attach user to context on successful jwt validation
                 context.Items["user"] = userId;
             }

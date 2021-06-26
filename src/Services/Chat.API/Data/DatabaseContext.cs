@@ -11,9 +11,10 @@ namespace Chat.API.Data
         {
         }
 
-        public DbSet<Entities.Message> Messages { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<RoomUser> RoomUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +22,7 @@ namespace Chat.API.Data
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new RoomUserConfiguration());
         }
     }
 }

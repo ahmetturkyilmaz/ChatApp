@@ -9,11 +9,9 @@ namespace Chat.API.Models
     public class RoomDto
     {
         public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
+        [Required] public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
-        public ICollection<MessageDto> Messages { get; set; }
-        public ICollection<UserDto> Users { get; set; }
+        public ICollection<int> UserIds { get; set; }
 
         public RoomDto()
         {

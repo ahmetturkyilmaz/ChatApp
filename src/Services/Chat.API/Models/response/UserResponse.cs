@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Chat.API.Entities;
 
 namespace Chat.API.Models.response
 {
@@ -15,6 +16,10 @@ namespace Chat.API.Models.response
         public string Name { get; set; }
         public string Surname { get; set; }
 
+        public UserResponse()
+        {
+        }
+
         public UserResponse(long id, string email, string name, string surname)
         {
             Id = id;
@@ -22,5 +27,10 @@ namespace Chat.API.Models.response
             Name = name;
             Surname = surname;
         }
+    }
+
+    public class UserResponseWithRooms : UserResponse
+    {
+        public List<Room> Rooms { get; set; }
     }
 }

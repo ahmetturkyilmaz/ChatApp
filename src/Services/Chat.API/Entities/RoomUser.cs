@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Chat.API.Entities
 {
-    public class UserRoom
+    public class RoomUser
     {
         public int UserId { get; set; }
         public User User { get; set; }

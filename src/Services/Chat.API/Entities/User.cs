@@ -9,7 +9,7 @@ namespace Chat.API.Entities
         public string Name { get; set; }
         public string Surname { get; set; }
         public string PasswordHash { get; set; }
-        public ICollection<Room> Rooms { get; set; }
+        public ICollection<RoomUser> RoomUsers { get; set; }
 
         public User()
         {
