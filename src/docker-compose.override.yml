@@ -1,8 +1,40 @@
-version: '3.4'
+version: '3.9'
 
 services:
-  chat.api:
+  chatdb:
+    container_name: chatdb
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+        SA_PASSWORD: "YourStrong@Passw0rd"
+        ACCEPT_EULA: "Y"
+    restart: always
     ports:
-      - "80"
+        - "1433:1433"
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+
+  chat.api:
+    container_name: chat.api
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - "ConnectionStrings:sqlConnection=Server=chatdb;Database=ChatDB;User Id=sa;Password=YourStrong@Passw0rd"            
+        - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+        - chatdb
+        - rabbitmq
+    ports:
+        - "8000:80"
+
+  messagesender.api:
+    container_name: messagesender.api
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+        - rabbitmq
+    ports:
+        - "8001:80"

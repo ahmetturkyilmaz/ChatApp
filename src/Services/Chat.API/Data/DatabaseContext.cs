@@ -1,4 +1,5 @@
-﻿using Chat.API.Data.Configurations;
+﻿using System.Runtime.CompilerServices;
+using Chat.API.Data.Configurations;
 using Chat.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,6 @@ namespace Chat.API.Data
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
-
         public DbSet<Message> Messages { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<User> User { get; set; }

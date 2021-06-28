@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Chat.API.Exceptions
 {
     [Serializable]
-    internal class RoomNotFoundException : System.Exception
+    public class RoomNotFoundException : System.Exception
     {
         public RoomNotFoundException()
         {

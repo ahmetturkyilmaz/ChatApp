@@ -8,5 +8,7 @@ namespace Chat.API.Services
     public interface IRoomUserService
     {
         public Task PostRoomUser(int roomId, int userId);
+
+
     }
 }

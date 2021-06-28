@@ -1,4 +1,3 @@
-using Chat.API.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -7,21 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Chat.API.Data;
-using Chat.API.Data.Seeds;
 
-namespace Chat.API
+namespace MessageSender.API
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().MigrateDatabase<DatabaseContext>((context, services) =>
-            {
-                ChatContextSeed
-                    .SeedAsync(context)
-                    .Wait();
-            }).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

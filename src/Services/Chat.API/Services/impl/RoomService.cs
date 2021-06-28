@@ -2,6 +2,7 @@
 using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Models;
+using Chat.API.Models.response;
 using Chat.API.Repository;
 
 
@@ -30,7 +31,7 @@ namespace Chat.API.Services.impl
             return result;
         }
 
-        public async Task<RoomDto> SaveRoom(int userId, RoomDto room)
+        public async Task<RoomResponse> SaveRoom(int userId, RoomDto room)
         {
             var storedRoom = await _repository.GetByRoomName(userId, room.Name);
             if (storedRoom != null)
@@ -43,7 +44,8 @@ namespace Chat.API.Services.impl
             await _unitOfWork.RoomUserRepository.PostRoomUser(userId, recordedRoom.Id);
             await _unitOfWork.Save();
 
-            return null;
+            return new RoomResponse()
+                {Id = recordedRoom.Id, CreatedAt = recordedRoom.CreatedAt, Name = recordedRoom.Name};
         }
 
         public async Task UpdateRoom(RoomDto room)

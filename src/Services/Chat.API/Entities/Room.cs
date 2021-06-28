@@ -12,6 +12,8 @@ namespace Chat.API.Entities
         [Required]
         public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime LastMessageAt { get; set; }
+
         public ICollection<Message> Messages { get; set; }
 
         public ICollection<RoomUser> RoomUsers { get; set; }

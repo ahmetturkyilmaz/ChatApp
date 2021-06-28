@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Chat.API.Exceptions
 {
     [Serializable]
-    internal class RoomNameAlreadyExistsException : System.Exception
+    public class RoomNameAlreadyExistsException : System.Exception
     {
         public RoomNameAlreadyExistsException()
         {

@@ -19,5 +19,9 @@ namespace Chat.API.Models.response
             Name = name;
             CreatedAt = createdAt;
         }
+
+        public RoomResponse()
+        {
+        }
     }
 }

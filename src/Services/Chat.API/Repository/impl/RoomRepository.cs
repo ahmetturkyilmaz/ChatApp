@@ -71,6 +71,7 @@ namespace Chat.API.Repository.impl
             }
 
             _db.Remove(entity);
+            _context.SaveChanges();
         }
 
         public async Task Update(RoomDto roomDto)

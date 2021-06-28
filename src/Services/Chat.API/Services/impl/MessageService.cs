@@ -56,6 +56,11 @@ namespace Chat.API.Services.impl
             message.Content = Regex.Replace(message.Content, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty);
 
             MessageResponse response = await _messageRepository.SaveMessage(message);
+
+            var roomToBeUpdated = await _unitOfWork.RoomRepository.Get(response.ToRoomId);
+
+            roomToBeUpdated.LastMessageAt = new DateTime().ToLocalTime();
+            await _unitOfWork.RoomRepository.Update(roomToBeUpdated);
             return response;
             //Broadcast the message back
         }

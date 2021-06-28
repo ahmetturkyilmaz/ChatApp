@@ -2,16 +2,23 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace EventBus.Messages.Events
+namespace MessageSender.API.Models
 {
-    public class MessageSendEvent : IntegrationBaseEvent
+    public class MessageDto
     {
+        public int Id { get; set; }
+        [Required]
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
         public int FromUserId { get; set; }
+        [Required]
         public int ToRoomId { get; set; }
+        public RoomDto ToRoom { get; set; }
+
+        public MessageDto()
+        {
+        }
     }
 }
