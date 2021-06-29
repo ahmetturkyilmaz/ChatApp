@@ -3,18 +3,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Chat.API.Repository;
+using MessageSender.API.Helpers;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
-namespace Chat.API.Helpers
+namespace MessageSender.API.Helpers
 {
     public class JWTHelper
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
-        private IUnitOfWork _unitOfWork;
 
         public JWTHelper(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
@@ -22,9 +21,8 @@ namespace Chat.API.Helpers
             _appSettings = appSettings.Value;
         }
 
-        public async Task Invoke(HttpContext context, IUnitOfWork unitOfWork)
+        public async Task Invoke(HttpContext context )
         {
-            _unitOfWork = unitOfWork;
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
@@ -53,8 +51,6 @@ namespace Chat.API.Helpers
                 var jwtToken = (JwtSecurityToken) validatedToken;
                 var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
-                //Check if the user exists
-                await _unitOfWork.UserRepository.GetUserById(int.Parse(userId));
                 // attach user to context on successful jwt validation
                 context.Items["user"] = userId;
             }

@@ -30,10 +30,11 @@ namespace Chat.API.Repository.impl
             var rooms = await query
                 .Where(r => r.Name.Equals(name))
                 .FirstOrDefaultAsync();
-            if (rooms==null)
+            if (rooms == null)
             {
                 return null;
             }
+
             return _mapper.Map<RoomDto>(rooms);
         }
 
@@ -49,29 +50,29 @@ namespace Chat.API.Repository.impl
             return _mapper.Map<RoomDto>(result);
         }
 
-        public async Task<Room> SaveRoom(RoomDto room)
+        public async Task<RoomDto> SaveRoom(RoomDto room)
         {
-            room.CreatedAt = new DateTime();
+            room.CreatedAt = DateTime.Now;
             var roomEntity = new Room()
             {
                 Name = room.Name,
-                CreatedAt = new DateTime()
+                CreatedAt = DateTime.Now
             };
             await _db.AddAsync(roomEntity);
             await _context.SaveChangesAsync();
-            return roomEntity;
+            return _mapper.Map<RoomDto>(roomEntity);
         }
 
         public async Task Delete(int id)
         {
-            var entity = await _db.FindAsync(id);
+            var entity = await _db.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
             if (entity == null)
             {
                 throw new RoomNotFoundException();
             }
 
             _db.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task Update(RoomDto roomDto)

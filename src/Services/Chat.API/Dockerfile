@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Services/Chat.API/Chat.API.csproj", "Services/Chat.API/"]
+COPY ["BuildingBlocks/ClassLibrary1/EventBus.Messages.csproj", "BuildingBlocks/ClassLibrary1/"]
 RUN dotnet restore "Services/Chat.API/Chat.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Chat.API"

@@ -26,11 +26,10 @@ namespace Chat.API.Repository.impl
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserDto>> GetUsers()
+        public async Task<List<UserDto>> GetUsers()
         {
             IQueryable<User> query = _db;
-            query = query.Where(user => true);
-            var result = await query.ToListAsync();
+            var result = await query.Where(user => true).ToListAsync();
             return _mapper.Map<List<UserDto>>(result);
         }
 

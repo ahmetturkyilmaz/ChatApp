@@ -6,6 +6,7 @@ using AutoMapper;
 using Chat.API.Entities;
 using Chat.API.Messaging;
 using Chat.API.Models;
+using EventBus.Messages.Events;
 
 namespace Chat.API.Mapper
 {

@@ -12,10 +12,17 @@ namespace Chat.API.Models
         [Required] public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastMessageAt { get; set; }
-        public ICollection<int> UserIds { get; set; }
 
         public RoomDto()
         {
+        }
+
+        public RoomDto(int id, string name, DateTime createdAt, DateTime lastMessageAt)
+        {
+            Id = id;
+            Name = name;
+            CreatedAt = createdAt;
+            LastMessageAt = lastMessageAt;
         }
     }
 }

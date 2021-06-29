@@ -9,11 +9,11 @@ namespace Chat.API.Services
 {
     public interface IMessageService
     {
-        public Task<IList<MessageDto>> GetAllMessagesByRoomId(int roomId);
+        public Task<List<MessageDto>> GetAllMessagesByRoomId(int roomId);
         public Task<MessageDto> GetById(int messageId);
-        public Task<MessageResponse> SaveMessage(MessageDto message);
+        public Task<MessageDto> SaveMessage(MessageDto message);
 
-        public Task<List<MessageResponse>> GetByPagination(int roomId, int now, int next);
+        public Task<List<MessageDto>> GetByPagination(int roomId, int now, int next);
         public Task UpdateMessage(MessageDto message);
         public Task DeleteMessage(int id);
     }

@@ -22,28 +22,22 @@ namespace Chat.API.Services.impl
             _messageRepository = unitOfWork.MessageRepository;
         }
 
-        public async Task<IList<MessageDto>> GetAllMessagesByRoomId(int roomId)
+        public async Task<List<MessageDto>> GetAllMessagesByRoomId(int roomId)
         {
-            await _unitOfWork.RoomRepository.Get(roomId);
-
-            return await _messageRepository.GetAllByRoomId(roomId);
+            var result = await _messageRepository.GetAllByRoomId(roomId);
+            return result;
         }
 
-        public async Task<List<MessageResponse>> GetByPagination(int roomId, int now, int next)
+        public async Task<List<MessageDto>> GetByPagination(int roomId, int now, int next)
         {
             var messages = await _messageRepository.GetByPagination(roomId, now, next);
+            
             if (messages == null)
             {
                 return null;
             }
 
-            return messages
-                .Select(message =>
-                    new MessageResponse(message.Id,
-                        message.Content,
-                        message.CreatedAt,
-                        message.FromUserId,
-                        message.FromUserId)).ToList();
+            return messages;
         }
 
         public async Task<MessageDto> GetById(int messageId)
@@ -51,16 +45,17 @@ namespace Chat.API.Services.impl
             return await _messageRepository.Get(messageId);
         }
 
-        public async Task<MessageResponse> SaveMessage(MessageDto message)
+        public async Task<MessageDto> SaveMessage(MessageDto message)
         {
             message.Content = Regex.Replace(message.Content, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty);
 
-            MessageResponse response = await _messageRepository.SaveMessage(message);
+            var response = await _messageRepository.SaveMessage(message);
 
             var roomToBeUpdated = await _unitOfWork.RoomRepository.Get(response.ToRoomId);
 
-            roomToBeUpdated.LastMessageAt = new DateTime().ToLocalTime();
+            roomToBeUpdated.LastMessageAt = DateTime.Now;
             await _unitOfWork.RoomRepository.Update(roomToBeUpdated);
+            await _unitOfWork.Save();
             return response;
             //Broadcast the message back
         }

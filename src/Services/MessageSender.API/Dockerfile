@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Services/MessageSender.API/MessageSender.API.csproj", "Services/MessageSender.API/"]
+COPY ["BuildingBlocks/ClassLibrary1/EventBus.Messages.csproj", "BuildingBlocks/ClassLibrary1/"]
 RUN dotnet restore "Services/MessageSender.API/MessageSender.API.csproj"
 COPY . .
 WORKDIR "/src/Services/MessageSender.API"

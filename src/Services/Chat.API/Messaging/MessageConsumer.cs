@@ -8,12 +8,13 @@ using AutoMapper;
 using Chat.API.Entities;
 using Chat.API.Models;
 using Chat.API.Services;
+using EventBus.Messages.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace Chat.API.Messaging
 {
-    public class MessageConsumer : IConsumer<Message>
+    public class MessageConsumer : IConsumer<MessageSendEvent>
     {
         readonly ILogger<MessageConsumer> _logger;
         private readonly IMapper _mapper;
@@ -26,12 +27,11 @@ namespace Chat.API.Messaging
             _service = service;
         }
 
-        public async Task Consume(ConsumeContext<Message> context)
+        public async Task Consume(ConsumeContext<MessageSendEvent> context)
         {
             var command = _mapper.Map<MessageDto>(context.Message);
             var result = await _service.SaveMessage(command);
-            _logger.LogInformation("Message with id " + result.Id +" and content '"+result.Content+"' is saved");
+            _logger.LogInformation("Message with id " + result.Id + " and content '" + result.Content + "' is saved");
         }
-
     }
 }

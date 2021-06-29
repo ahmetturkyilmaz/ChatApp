@@ -48,7 +48,7 @@ namespace Chat.API.Test
             var user = await _userService.Create(new SignupRequest()
             {
                 Email = "ahmet@gmail.com",
-                FirstName = "Ahmet",
+                Name = "Ahmet",
                 LastName = "Turkyilmaz",
                 Password = "ahmet123456"
             });
@@ -93,7 +93,7 @@ namespace Chat.API.Test
             var user = await _userService.Create(new SignupRequest()
             {
                 Email = "turkyilmazah@gmail.com",
-                FirstName = "Ahmet",
+                Name = "Ahmet",
                 LastName = "Turkyilmaz",
                 Password = "ahmet12345678"
             });

@@ -11,11 +11,11 @@ namespace Chat.API.Services
     public interface IUserService
     {
         Task<JwtResponse> Authenticate(LoginRequest loginRequest);
-        Task<IEnumerable<UserDto>> GetAll();
+        Task<List<UserResponse>> GetAll();
         Task<UserResponse> GetById(int id);
         Task<UserResponseWithRooms> GetUserWithRooms(int id);
-        Task<List<RoomResponse>> GetUserRooms(int id);
-        Task<UserDto> Create(SignupRequest signupRequest);
+        Task<List<RoomDto>> GetUserRooms(int id);
+        Task<UserResponse> Create(SignupRequest signupRequest);
         Task<UserDto> Update(UserUpdateRequest user, int storedUserId);
         void Delete(int id);
     }

@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Chat.API.Entities;
+using Chat.API.Models;
 using Chat.API.Repository;
 
 namespace Chat.API.Services.impl
@@ -15,9 +17,9 @@ namespace Chat.API.Services.impl
         }
 
 
-        public async Task PostRoomUser( int userId, int roomId)
+        public async Task PostRoomUser(InviteUserDto inviteUserDto,int roomId)
         {
-            await _repository.PostRoomUser(userId, roomId);
+            await _repository.PostRoomUser(inviteUserDto.UserId, roomId);
             await _unitOfWork.Save();
         }
     }

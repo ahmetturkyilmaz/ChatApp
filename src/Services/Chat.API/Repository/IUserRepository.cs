@@ -10,7 +10,7 @@ namespace Chat.API.Repository
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserDto>> GetUsers();
+        Task<List<UserDto>> GetUsers();
         Task<UserDto> GetUserById(int id);
         Task<UserResponseWithRooms> GetUserWithRooms(int id);
 

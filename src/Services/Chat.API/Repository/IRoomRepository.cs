@@ -9,7 +9,7 @@ namespace Chat.API.Repository
     {
         public  Task<RoomDto> GetByRoomName(int userId, string name);
         public Task<RoomDto> Get(int id);
-        public Task<Room> SaveRoom(RoomDto room);
+        public Task<RoomDto> SaveRoom(RoomDto room);
         public Task Delete(int id);
         public Task Update(RoomDto roomDto);
     }

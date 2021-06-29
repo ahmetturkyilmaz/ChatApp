@@ -43,7 +43,7 @@ namespace Chat.API.Data.Seeds
             {
                 new Room()
                 {
-                    Name = "Room 1", CreatedAt = new DateTime()
+                    Name = "Room 1", CreatedAt = DateTime.Now
                 }
             };
         }

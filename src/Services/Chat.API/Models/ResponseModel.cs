@@ -8,8 +8,14 @@ namespace Chat.API.Models
 {
     public class ResponseModel<T>
     {
-        public string HttpStatus { get; set; }
+        public int HttpStatus { get; set; }
 
         public T Data { get; set; }
+
+        public ResponseModel(HttpStatusCode httpStatus, T data)
+        {
+            HttpStatus = (int) httpStatus;
+            Data = data;
+        }
     }
 }

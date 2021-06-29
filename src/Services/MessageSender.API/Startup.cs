@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 using MassTransit;
+using MessageSender.API.Helpers;
 using MessageSender.API.Mapper;
 
 namespace MessageSender.API
@@ -22,6 +23,8 @@ namespace MessageSender.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
             services.AddControllers();
             services.AddMassTransit(x =>
             {
@@ -32,7 +35,17 @@ namespace MessageSender.API
                 });
             });
             services.AddMassTransitHostedService();
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
             services.AddAutoMapper(typeof(MapperProfile));
 
             services.AddSwaggerGen(c =>
@@ -50,9 +63,10 @@ namespace MessageSender.API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MessageSender.API v1"));
             }
+            app.UseMiddleware<JWTHelper>();
 
             app.UseRouting();
-
+            app.UseCors("AllowAll");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

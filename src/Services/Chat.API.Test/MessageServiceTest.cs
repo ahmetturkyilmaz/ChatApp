@@ -53,7 +53,7 @@ namespace Chat.API.Test
             var user = await _userService.Create(new SignupRequest()
             {
                 Email = "ahmet@gmail.com",
-                FirstName = "Ahmet",
+                Name = "Ahmet",
                 LastName = "Turkyilmaz",
                 Password = "ahmet123456"
             });
@@ -65,7 +65,7 @@ namespace Chat.API.Test
             var user2 = await _userService.Create(new SignupRequest()
             {
                 Email = "turkyilmazah@gmail.com",
-                FirstName = "Ahmet",
+                Name = "Ahmet",
                 LastName = "Turkyilmaz",
                 Password = "ahmet12345678"
             });
@@ -77,58 +77,61 @@ namespace Chat.API.Test
 
             Assert.IsTrue(jwtResponse1.AccessToken != null);
             Assert.IsTrue(jwtResponse2.AccessToken != null);
+            var roomResponse1 = await _roomService.SaveRoom(1, new RoomDto() { Name = "Room 1" });
+            var roomResponse2 = await _roomService.SaveRoom(1, new RoomDto() { Name = "Room 2" });
         }
 
         [Test, Order(2)]
         public async Task CreateRoomsAndInjectMessages()
         {
-            var roomResponse1 = await _roomService.SaveRoom(1, new RoomDto() {Name = "Room 1"});
-            var roomResponse2 = await _roomService.SaveRoom(1, new RoomDto() {Name = "Room 2"});
+
+
+            var room1 = await _roomService.GetById(1);
+            var room2 = await _roomService.GetById(2);
             var messageResponse = await _messageService.SaveMessage(new MessageDto()
-                {Content = "hello1", FromUserId = 1, ToRoomId = roomResponse1.Id});
+                {Content = "hello1", FromUserId = 1, ToRoomId = room1.Id});
             var messageResponse2 = await _messageService.SaveMessage(new MessageDto()
-                {Content = "hello2", FromUserId = 2, ToRoomId = roomResponse2.Id});
-            
+                {Content = "hello2", FromUserId = 2, ToRoomId = room2.Id});
+
             Assert.AreEqual(messageResponse.Content, "hello1");
-            Assert.AreEqual(messageResponse.ToRoomId, roomResponse1.Id);
+            Assert.AreEqual(messageResponse.ToRoomId, 1);
             Assert.AreEqual(messageResponse.FromUserId, 1);
             Assert.AreEqual(messageResponse2.Content, "hello2");
-            Assert.AreEqual(messageResponse2.ToRoomId, roomResponse2.Id);
+            Assert.AreEqual(messageResponse2.ToRoomId, 2);
             Assert.AreEqual(messageResponse2.FromUserId, 2);
-
         }
 
         [Test, Order(3)]
         public async Task TestGetByPagination()
         {
             var messageResponse3 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello3", FromUserId = 1, ToRoomId = 1 });
+                {Content = "hello3", FromUserId = 1, ToRoomId = 1});
             var messageResponse4 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello4", FromUserId = 2, ToRoomId = 1 });
+                {Content = "hello4", FromUserId = 2, ToRoomId = 1});
             var messageResponse5 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello5", FromUserId = 1, ToRoomId = 1 });
+                {Content = "hello5", FromUserId = 1, ToRoomId = 1});
             var messageResponse6 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello6", FromUserId = 2, ToRoomId = 1 });
+                {Content = "hello6", FromUserId = 2, ToRoomId = 1});
             var messageResponse7 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello7", FromUserId = 1, ToRoomId = 1 });
+                {Content = "hello7", FromUserId = 1, ToRoomId = 1});
             var messageResponse8 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello8", FromUserId = 2, ToRoomId = 1});
+                {Content = "hello8", FromUserId = 2, ToRoomId = 1});
             var messageResponse9 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello9", FromUserId = 1, ToRoomId = 1 });
+                {Content = "hello9", FromUserId = 1, ToRoomId = 1});
             var messageResponse10 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello10", FromUserId = 2, ToRoomId = 1 });
+                {Content = "hello10", FromUserId = 2, ToRoomId = 1});
             var messageResponse11 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello11", FromUserId = 1, ToRoomId =1 });
+                {Content = "hello11", FromUserId = 1, ToRoomId = 1});
             var messageResponse12 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello12", FromUserId = 2, ToRoomId = 1});
+                {Content = "hello12", FromUserId = 2, ToRoomId = 1});
             var messageResponse13 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello13", FromUserId = 1, ToRoomId = 1 });
+                {Content = "hello13", FromUserId = 1, ToRoomId = 1});
             var messageResponse14 = await _messageService.SaveMessage(new MessageDto()
-            { Content = "hello14", FromUserId = 2, ToRoomId = 1 });
+                {Content = "hello14", FromUserId = 2, ToRoomId = 1});
             var response = await _messageService.GetByPagination(1, 3, 3);
             Assert.AreEqual(response.Count, 3);
             Assert.AreEqual(response[0].FromUserId, 1);
-            Assert.AreEqual(response[0].Content,"hello5");
+            Assert.AreEqual(response[0].Content, "hello5");
         }
     }
 }

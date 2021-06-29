@@ -25,19 +25,17 @@ namespace Chat.API.Repository.impl
             _mapper = mapper;
         }
 
-        public async Task<IList<MessageDto>> GetAllByRoomId(int roomId)
+        public async Task<List<MessageDto>> GetAllByRoomId(int roomId)
         {
             IQueryable<Message> query = _db;
 
             query = query.Where(m => m.ToRoomId == roomId)
-                //.Include(m => m.FromUserId)
-                //.Include(m => m.ToRoom)
                 .OrderByDescending(m => m.CreatedAt)
                 .Take(20)
                 .Reverse();
             var messages = await query.AsNoTracking().ToListAsync();
 
-            return _mapper.Map<IList<MessageDto>>(messages);
+            return _mapper.Map<List<MessageDto>>(messages);
         }
 
         public async Task<MessageDto> Get(int id)
@@ -58,18 +56,18 @@ namespace Chat.API.Repository.impl
             return _mapper.Map<List<MessageDto>>(result);
         }
 
-        public async Task<MessageResponse> SaveMessage(MessageDto message)
+        public async Task<MessageDto> SaveMessage(MessageDto message)
         {
             var entity = new Message()
             {
                 Content = message.Content,
-                CreatedAt = new DateTime(),
+                CreatedAt = DateTime.Now,
                 ToRoomId = message.ToRoomId,
                 FromUserId = message.FromUserId
             };
             await _db.AddAsync(entity);
             await _context.SaveChangesAsync();
-            return new MessageResponse(entity.Id, entity.Content, entity.CreatedAt, entity.FromUserId, entity.ToRoomId);
+            return _mapper.Map<MessageDto>(entity);
         }
 
         public async Task Delete(int id)

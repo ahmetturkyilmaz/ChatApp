@@ -10,7 +10,6 @@ namespace Chat.API.Models
         public string Name { get; set; }
         public string Surname { get; set; }
         public string PasswordHash { get; set; }
-        public ICollection<RoomDto> Rooms { get; set; }
 
         public UserDto()
         {

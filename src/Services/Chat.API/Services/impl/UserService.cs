@@ -16,6 +16,7 @@ using Chat.API.Models.response;
 using Chat.API.Repository;
 using BC = BCrypt.Net.BCrypt;
 using Chat.API.Util;
+using MassTransit.Initializers;
 using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace Chat.API.Services.impl
@@ -48,23 +49,30 @@ namespace Chat.API.Services.impl
         }
 
 
-        public async Task<UserDto> Create(SignupRequest signupRequest)
+        public async Task<UserResponse> Create(SignupRequest signupRequest)
         {
             var user = new UserDto(signupRequest.Email.Trim(),
-                signupRequest.FirstName.Trim(),
-                signupRequest.LastName.Trim(),
+                signupRequest.Name.Trim(),
+                signupRequest.LastName,
                 signupRequest.Password.Trim());
 
             UserValidator.ValidateUser(user);
             user.PasswordHash = BC.HashPassword(user.PasswordHash);
             var result = await _userRepository.CreateUser(user);
             await _unitOfWork.Save();
-            return result;
+            return new UserResponse(result.Id, result.Email, result.Name, result.Surname);
         }
 
-        public async Task<IEnumerable<UserDto>> GetAll()
+        public async Task<List<UserResponse>> GetAll()
         {
-            return await _userRepository.GetUsers();
+            var users = await _userRepository.GetUsers();
+            var userResponseList = new List<UserResponse>();
+            foreach (var user in users)
+            {
+                userResponseList.Add(new UserResponse(user.Id, user.Email, user.Name, user.Surname));
+            }
+
+            return userResponseList;
         }
 
         public async Task<UserResponse> GetById(int id)
@@ -83,7 +91,7 @@ namespace Chat.API.Services.impl
             return user;
         }
 
-        public async Task<List<RoomResponse>> GetUserRooms(int id)
+        public async Task<List<RoomDto>> GetUserRooms(int id)
         {
             var userWithRooms = await GetUserWithRooms(id);
             var rooms = userWithRooms.Rooms;
@@ -92,13 +100,14 @@ namespace Chat.API.Services.impl
                 throw new RoomNotFoundException();
             }
 
-            List<RoomResponse> roomResponses = new List<RoomResponse>();
+            List<RoomDto> roomResponses = new List<RoomDto>();
 
             foreach (var room in rooms)
             {
-                roomResponses.Add(new RoomResponse(room.Id, room.Name, room.CreatedAt));
+                roomResponses.Add(new RoomDto(room.Id, room.Name, room.CreatedAt, room.LastMessageAt));
             }
 
+            roomResponses.Sort((x, y) => DateTime.Compare(x.LastMessageAt, y.LastMessageAt));
             return roomResponses;
         }
 

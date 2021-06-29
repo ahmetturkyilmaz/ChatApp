@@ -13,10 +13,12 @@ using Chat.API.Repository;
 using Chat.API.Repository.impl;
 using Chat.API.Services;
 using Chat.API.Services.impl;
+using EventBus.Messages.Common;
 using MassTransit;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
-
 
 namespace Chat.API
 {
@@ -48,10 +50,8 @@ namespace Chat.API
                 {
                     cfg.Host(Configuration["EventBusSettings:HostAddress"]);
                     cfg.UseHealthCheck(context);
-                    cfg.ReceiveEndpoint("message-queue", c =>
-                    {
-                        c.ConfigureConsumer<MessageConsumer>(context);
-                    });
+                    cfg.ReceiveEndpoint(EventBusConstants.MessageSendQueue,
+                        c => { c.ConfigureConsumer<MessageConsumer>(context); });
                 });
             });
             services.AddMassTransitHostedService();
@@ -59,15 +59,20 @@ namespace Chat.API
 
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Chat.API", Version = "v1"}); });
-          
-            services.AddCors(o =>
+
+            services.AddCors(options =>
             {
-                o.AddPolicy("AllowAll", builder =>
-                    builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
             });
 
+            
             services.AddAutoMapper(typeof(MapperProfile));
             services.AddScoped<MessageConsumer>();
             services.AddScoped<IUserService, UserService>();
@@ -93,6 +98,7 @@ namespace Chat.API
             app.UseMiddleware<JWTHelper>();
 
             app.UseRouting();
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 

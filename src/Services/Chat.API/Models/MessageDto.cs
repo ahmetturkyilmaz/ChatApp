@@ -15,7 +15,6 @@ namespace Chat.API.Models
         public int FromUserId { get; set; }
         [Required]
         public int ToRoomId { get; set; }
-        public RoomDto ToRoom { get; set; }
 
         public MessageDto()
         {
