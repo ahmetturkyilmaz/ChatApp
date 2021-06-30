@@ -33,7 +33,7 @@ namespace MessageSender.API.Controllers
         [ProducesResponseType((int) HttpStatusCode.Accepted)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [HttpPost]
-        public async Task<IActionResult> MessageQueue([FromBody] MessageDto messageDto)
+        public async Task<IActionResult> SendMessage([FromBody] MessageDto messageDto)
         {
             var storedUserId = (string) HttpContext.Items["user"];
             messageDto.FromUserId = int.Parse(storedUserId);
